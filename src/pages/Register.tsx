@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import config from '../config/default'
 import validator from 'validator';
 
-function Login() {
+function Register() {
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -15,13 +15,13 @@ function Login() {
         if (!email || !username || !password || emailError || usernameError || passwordError)
             return (
                 <button className="btn btn-lg btn-primary pull-xs-right" disabled>
-                    Log in
+                    Sign up
                 </button>
             )
         else
             return (
                 <button className="btn btn-lg btn-primary pull-xs-right">
-                    Log in
+                    Sign up
                 </button>
             )
     }
@@ -32,23 +32,27 @@ function Login() {
     }
 
     const emailValidator = () => {
-        if (!email)
-            setEmailError("Email shouldn't be empty")
-        else if (!validator.isEmail(email))
+        if (!validator.isEmail(email))
             setEmailError('Invalid email address')
     }
 
     const passwordValidator = () => {
-        if (!password)
-            setPasswordError("Password shouln't be empty")
+        if (!validator.isStrongPassword(password, {
+            minLength: 8,
+            minSymbols: 1,
+            minUppercase: 1,
+            minLowercase: 1,
+            minNumbers: 1
+        }))
+            setPasswordError('Weak password')
         else
             setPasswordError('')
     }
 
-    const loginUser = async (e) => {
+    const registerUser = async (e: any) => {
         e.preventDefault()
         try {
-            var res = await axios.post(config.apiUrl + '/users/login', {
+            var res = await axios.post(config.apiUrl + '/users', {
                 user: {
                     username,
                     email,
@@ -56,10 +60,14 @@ function Login() {
                 }
             })
             console.log(res.data)
-            alert('Login successfull')
-            window.location.href = '/'
-        } catch (error) {
-            alert('Email or Password invalid')
+            alert('Registration successfull')
+            window.location.href = '/login'
+        } catch (error: any) {
+            let { email = '', username = '' } = error.response.data.errors
+            if (email)
+                setEmailError("This email is already taken")
+            if (username)
+                setUsernameError("This username is already taken")
         }
     }
     return (
@@ -68,11 +76,11 @@ function Login() {
                 <div className="row">
 
                     <div className="col-md-6 offset-md-3 col-xs-12">
-                        <h1 className="text-xs-center">Log in</h1>
+                        <h1 className="text-xs-center">Sign up</h1>
                         <p className="text-xs-center">
-                            <a href="/register">Register?</a>
+                            <a href="/login">Have an account?</a>
                         </p>
-                        <form onSubmit={loginUser}>
+                        <form onSubmit={registerUser}>
                             <fieldset className="form-group">
                                 <input className="form-control form-control-lg" type="text" placeholder="Your Name" value={username} onBlur={usernameValidator} onChange={e => { setUsername(e.target.value); setUsernameError(''); }} />
                                 {
@@ -91,7 +99,7 @@ function Login() {
                                 }
                             </fieldset>
                             <fieldset className="form-group">
-                                <input className="form-control form-control-lg" type="password" placeholder="Password" value={password} onBlur={passwordValidator} onChange={e => { setPassword(e.target.value); setPasswordError(''); }} />
+                                <input className="form-control form-control-lg" type="password" placeholder="Password" value={password} onChange={e => { setPassword(e.target.value); passwordValidator(); }} />
                                 {
                                     passwordError ? (<ul className="error-messages">
                                         <li>{passwordError}</li>
@@ -107,4 +115,4 @@ function Login() {
         </div>);
 }
 
-export default Login;
+export default Register;

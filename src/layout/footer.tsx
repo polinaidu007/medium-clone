@@ -3,9 +3,9 @@ import React from 'react';
 function Footer() {
     return (
         <footer>
-            <div class="container">
-                <a href="/" class="logo-font">conduit</a>
-                <span class="attribution">
+            <div className="container">
+                <a href="/" className="logo-font">conduit</a>
+                <span className="attribution">
                     An interactive learning project from <a href="https://thinkster.io">Thinkster</a>. Code &amp; design licensed under MIT.
                 </span>
             </div>

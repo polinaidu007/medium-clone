@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import config from '../config/default'
 import validator from 'validator';
 
-function Register() {
+function Login() {
     const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
@@ -15,13 +15,13 @@ function Register() {
         if (!email || !username || !password || emailError || usernameError || passwordError)
             return (
                 <button className="btn btn-lg btn-primary pull-xs-right" disabled>
-                    Sign up
+                    Log in
                 </button>
             )
         else
             return (
                 <button className="btn btn-lg btn-primary pull-xs-right">
-                    Sign up
+                    Log in
                 </button>
             )
     }
@@ -32,27 +32,23 @@ function Register() {
     }
 
     const emailValidator = () => {
-        if (!validator.isEmail(email))
+        if (!email)
+            setEmailError("Email shouldn't be empty")
+        else if (!validator.isEmail(email))
             setEmailError('Invalid email address')
     }
 
     const passwordValidator = () => {
-        if (!validator.isStrongPassword(password, {
-            minLength: 8,
-            minSymbols: 1,
-            minUppercase: 1,
-            minLowercase: 1,
-            minNumbers: 1
-        }))
-            setPasswordError('Weak password')
+        if (!password)
+            setPasswordError("Password shouln't be empty")
         else
             setPasswordError('')
     }
 
-    const registerUser = async (e) => {
+    const loginUser = async (e: any) => {
         e.preventDefault()
         try {
-            var res = await axios.post(config.apiUrl + '/users', {
+            var res = await axios.post(config.apiUrl + '/users/login', {
                 user: {
                     username,
                     email,
@@ -60,14 +56,10 @@ function Register() {
                 }
             })
             console.log(res.data)
-            alert('Registration successfull')
-            window.location.href = '/login'
+            alert('Login successfull')
+            window.location.href = '/'
         } catch (error) {
-            let { email = '', username = '' } = error.response.data.errors
-            if (email)
-                setEmailError("This email is already taken")
-            if (username)
-                setUsernameError("This username is already taken")
+            alert('Email or Password invalid')
         }
     }
     return (
@@ -76,11 +68,11 @@ function Register() {
                 <div className="row">
 
                     <div className="col-md-6 offset-md-3 col-xs-12">
-                        <h1 className="text-xs-center">Sign up</h1>
+                        <h1 className="text-xs-center">Log in</h1>
                         <p className="text-xs-center">
-                            <a href="/login">Have an account?</a>
+                            <a href="/register">Register?</a>
                         </p>
-                        <form onSubmit={registerUser}>
+                        <form onSubmit={loginUser}>
                             <fieldset className="form-group">
                                 <input className="form-control form-control-lg" type="text" placeholder="Your Name" value={username} onBlur={usernameValidator} onChange={e => { setUsername(e.target.value); setUsernameError(''); }} />
                                 {
@@ -99,7 +91,7 @@ function Register() {
                                 }
                             </fieldset>
                             <fieldset className="form-group">
-                                <input className="form-control form-control-lg" type="password" placeholder="Password" value={password} onChange={e => { setPassword(e.target.value); passwordValidator(); }} />
+                                <input className="form-control form-control-lg" type="password" placeholder="Password" value={password} onBlur={passwordValidator} onChange={e => { setPassword(e.target.value); setPasswordError(''); }} />
                                 {
                                     passwordError ? (<ul className="error-messages">
                                         <li>{passwordError}</li>
@@ -115,4 +107,4 @@ function Register() {
         </div>);
 }
 
-export default Register;
+export default Login;
