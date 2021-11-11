@@ -1,35 +1,38 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import config from '../config/default'
 import validator from 'validator';
+import ErrorMessage from '../components/ErrorMessage';
+import SubmitButton from '../components/SubmitButton';
+import { UserContext } from '../context/userContext';
+import { getLocalStorageData, setLocalStorageData } from '../utils/utils';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
 
 function Login() {
-    const [username, setUsername] = useState('')
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
     const [emailError, setEmailError] = useState('')
     const [usernameError, setUsernameError] = useState('')
     const [passwordError, setPasswordError] = useState('')
 
-    const SubmitButton = () => {
-        if (!email || !username || !password || emailError || usernameError || passwordError)
-            return (
-                <button className="btn btn-lg btn-primary pull-xs-right" disabled>
-                    Log in
-                </button>
-            )
-        else
-            return (
-                <button className="btn btn-lg btn-primary pull-xs-right">
-                    Log in
-                </button>
-            )
-    }
+    const [disableButton, setDisableButton] = useState(false)
 
-    const usernameValidator = () => {
-        if (!username)
-            setUsernameError("Username shouldn't be empty")
-    }
+    // const { setUser } = useContext(UserContext)
+
+
+    // const saveUserDetails = (param: any) => {
+    //     let obj = { ...param, isAuthenticated: true }
+    //     localStorage.setItem('conduit_user', JSON.stringify(obj))
+    //     console.log('saveUserDetails')
+    //     // setUser(obj)
+    // }
+
+    useEffect(() => {
+        if (getLocalStorageData().isAuthenticated)
+            window.location.href = '/'
+    }, [])
 
     const emailValidator = () => {
         if (!email)
@@ -47,19 +50,21 @@ function Login() {
 
     const loginUser = async (e: any) => {
         e.preventDefault()
+        setDisableButton(true)
         try {
             var res = await axios.post(config.apiUrl + '/users/login', {
                 user: {
-                    username,
                     email,
                     password
                 }
             })
             console.log(res.data)
-            alert('Login successfull')
+            setLocalStorageData(res.data.user)
             window.location.href = '/'
+            toast('Login successfull', { type: 'success' })
         } catch (error) {
-            alert('Email or Password invalid')
+            setDisableButton(false)
+            toast('Email or Password invalid', { type: 'error' })
         }
     }
     return (
@@ -74,31 +79,20 @@ function Login() {
                         </p>
                         <form onSubmit={loginUser}>
                             <fieldset className="form-group">
-                                <input className="form-control form-control-lg" type="text" placeholder="Your Name" value={username} onBlur={usernameValidator} onChange={e => { setUsername(e.target.value); setUsernameError(''); }} />
-                                {
-                                    usernameError ? (<ul className="error-messages">
-                                        <li>{usernameError}</li>
-                                    </ul>) : null
-                                }
-                            </fieldset>
-
-                            <fieldset className="form-group">
                                 <input className="form-control form-control-lg" type="text" placeholder="Email" value={email} onBlur={emailValidator} onChange={e => { setEmail(e.target.value); setEmailError(''); }} />
                                 {
-                                    emailError ? (<ul className="error-messages">
-                                        <li>{emailError}</li>
-                                    </ul>) : null
+                                    emailError ? (<ErrorMessage text={emailError} />) : null
                                 }
                             </fieldset>
                             <fieldset className="form-group">
                                 <input className="form-control form-control-lg" type="password" placeholder="Password" value={password} onBlur={passwordValidator} onChange={e => { setPassword(e.target.value); setPasswordError(''); }} />
                                 {
-                                    passwordError ? (<ul className="error-messages">
-                                        <li>{passwordError}</li>
-                                    </ul>) : null
+                                    passwordError ? (<ErrorMessage text={passwordError} />) : null
                                 }
                             </fieldset>
-                            <SubmitButton />
+                            {
+                                (!email || !password || emailError || passwordError) ? (<SubmitButton disabled={true} text="Log in" />) : (<SubmitButton disabled={disableButton} text="Log in" />)
+                            }
                         </form>
                     </div>
 
