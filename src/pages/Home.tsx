@@ -1,32 +1,54 @@
 import axios from 'axios';
-import React, { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Link, Redirect } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import ArticlePreview from '../components/ArticlePreview';
 import config from '../config/default'
+import { UserContext } from '../context/userContext';
 import { article } from '../interfaces/models';
 
+interface feedStateObjectType {
+    data: article[],
+    loading: boolean
+}
+
 function Home() {
-    const [globalFeed, setGlobalFeed] = useState<article[]>([])
-    const [feed, setFeed] = useState([])
-    const [clickedGlobalFeed, setClickedGlobalFeed] = useState(false)
+    const [state, setState] = useState<feedStateObjectType>({ data: [], loading: true })
+    const [clickedGlobalFeed, setClickedGlobalFeed] = useState(true)
+
+    const { user } = useContext(UserContext)
 
 
     console.log(clickedGlobalFeed)
 
     useEffect(() => {
         (async () => {
-            let res = await getGlobalArticles()
-            setGlobalFeed(res?.data.articles)
-            console.log(globalFeed)
+            setState({ loading: true, data: [] })
+            let res
+            if (clickedGlobalFeed)
+                res = await getGlobalFeed()
+            else
+                res = await getFeed()
+            setState({ loading: false, data: res?.data.articles })
+
         })()
-    }, [])
+    }, [clickedGlobalFeed])
 
-
-
-    const getGlobalArticles = async () => {
+    async function getGlobalFeed() {
         try {
             return await axios.get(`${config.apiUrl}/articles?limit=20&offset=0`)
+        } catch (error) {
+            toast('Error in fetching data')
+        }
+    }
+
+    async function getFeed() {
+        try {
+            return await axios.get(`${config.apiUrl}/articles/feed?limit=20&offset=0`, {
+                headers: {
+                    authorization: `Bearer ${user.token}`
+                }
+            })
         } catch (error) {
             toast('Error in fetching data')
         }
@@ -58,71 +80,13 @@ function Home() {
                                 </li>
                             </ul>
                         </div>
-
-                        {/* <div className="article-preview">
-                            <div className="article-meta">
-                                <a href="profile.html"><img src="http://i.imgur.com/Qr71crq.jpg" /></a>
-                                <div className="info">
-                                    <a href="" className="author">Eric Simons</a>
-                                    <span className="date">January 20th</span>
-                                </div>
-                                <button className="btn btn-outline-primary btn-sm pull-xs-right">
-                                    <i className="ion-heart"></i> 29
-                                </button>
-                            </div>
-                            <a href="" className="preview-link">
-                                <h1>How to build webapps that scale</h1>
-                                <p>This is the description for the post.</p>
-                                <span>Read more...</span>
-                            </a>
-                        </div> */}
-
                         {
-                            globalFeed.map((article, index) => (
-                                <ArticlePreview key={article.slug} {...article} />
-                            ))
+                            state.loading ?
+                                'Loading...' :
+                                (state.data.length ? state.data.map((article, index) => (
+                                    <ArticlePreview key={article.slug} {...article} />
+                                )) : 'No records')
                         }
-
-                        {/* <ArticlePreview {
-                            ...{
-                                image: {
-                                    href: "profile.html",
-                                    src: "http://i.imgur.com/Qr71crq.jpg"
-                                },
-                                author: {
-                                    name: "Eric Simons",
-                                    href: ""
-
-                                },
-                                likeButton: {
-                                    count: "29"
-                                },
-                                articleDate: {
-                                    date: "January 20th"
-                                },
-                                heading: "How to build webapps that scale",
-                                description: "This is the description for the post."
-
-                            }
-                        } /> */}
-
-                        {/* <div className="article-preview">
-                            <div className="article-meta">
-                                <a href="profile.html"><img src="http://i.imgur.com/N4VcUeJ.jpg" /></a>
-                                <div className="info">
-                                    <a href="" className="author">Albert Pai</a>
-                                    <span className="date">January 20th</span>
-                                </div>
-                                <button className="btn btn-outline-primary btn-sm pull-xs-right">
-                                    <i className="ion-heart"></i> 32
-                                </button>
-                            </div>
-                            <a href="" className="preview-link">
-                                <h1>The song you won't ever stop singing. No matter how hard you try.</h1>
-                                <p>This is the description for the post.</p>
-                                <span>Read more...</span>
-                            </a>
-                        </div> */}
 
                     </div>
 

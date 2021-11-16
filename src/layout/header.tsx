@@ -1,52 +1,51 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
+import { Link, useLocation } from 'react-router-dom';
+import { UserContext } from '../context/userContext';
 import { clearLocalstorage, getLocalStorageData, userObj } from '../utils/utils';
 
 function Header() {
-    console.log('Header component')
-    const user = useRef(new userObj())
+    // console.log(window.location)
 
+    const { pathname } = useLocation()
+    console.log(pathname)
 
-
-    useEffect(() => {
-        user.current = getLocalStorageData()
-    }, [])
-
-    console.log('Header component : ', user.current)
+    const { user, setUser } = useContext(UserContext)
+    console.log('Header component : ', user)
 
     return (
         <div>
             <nav className="navbar navbar-light">
                 <div className="container">
-                    <a className="navbar-brand" href="index.html">conduit</a>
+                    <Link className="navbar-brand" to="/">conduit</Link>
                     <ul className="nav navbar-nav pull-xs-right">
                         {
-                            user.current.isAuthenticated ?
+                            user.isAuthenticated ?
                                 (
                                     <div>
                                         <li className="nav-item">
-                                            <a className="nav-link active" href="/">Home</a>
+                                            <Link className={pathname === '/' ? "nav-link active" : "nav-link"} to="/">Home</Link>
                                         </li>
                                         <li className="nav-item">
-                                            <a className="nav-link" href="/editor">
+                                            <Link className={pathname === '/editor' ? "nav-link active" : "nav-link"} to="/editor">
                                                 <i className="ion-compose"></i>&nbsp;New Article
-                                            </a>
+                                            </Link>
                                         </li>
                                         <li className="nav-item">
-                                            <a className="nav-link" href="/settings">
+                                            <Link className={pathname === '/settings' ? "nav-link active" : "nav-link"} to="/settings">
                                                 <i className="ion-gear-a"></i>&nbsp;Settings
-                                            </a>
+                                            </Link>
                                         </li><li className="nav-item">
-                                            <a className="nav-link" href="/login" onClick={clearLocalstorage}>Sign out</a>
+                                            <Link className="nav-link" to="/login" onClick={() => { setUser(new userObj()) }}>Sign out</Link>
                                         </li>
                                     </div>
                                 ) :
                                 (
                                     <div>
                                         <li className="nav-item">
-                                            <a className="nav-link" href="/login">Sign in</a>
+                                            <Link className={pathname === '/login' ? "nav-link active" : "nav-link"} to="/login">Sign in</Link>
                                         </li>
                                         <li className="nav-item">
-                                            <a className="nav-link" href="/register">Sign up</a>
+                                            <Link className={pathname === '/register' ? "nav-link active" : "nav-link"} to="/register">Sign up</Link>
                                         </li>
                                     </div>
                                 )

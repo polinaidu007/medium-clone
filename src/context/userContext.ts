@@ -1,8 +1,4 @@
 import { createContext } from "react";
-
-interface IContextProps {
-    user: any;
-    setUser: any;
-}
+import { userObj } from "../utils/utils";
 
 export const UserContext = createContext({} as any)

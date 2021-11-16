@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 import { article } from '../interfaces/models';
 import ArticleDate from './ArticleDate';
 import AuthorName from './AuthorName';
@@ -16,11 +17,11 @@ function ArticlePreview(param: article) {
             </div>
             <LikeButton {...param} />
         </div>
-        <a href="" className="preview-link" >
+        <Link to={`/article/${param.slug}`} className="preview-link" >
             <h1>{param.title}</h1>
             <p>{param.description}</p>
             <span>Read more...</span>
-        </a>
+        </Link>
     </div>);
 }
 

@@ -1,9 +1,10 @@
 import * as React from 'react';
+import { Link } from 'react-router-dom';
 import { article } from '../interfaces/models';
 
 function AuthorName({ author: { username } }: article) {
     return (
-        <a href="" className="author">{username}</a>
+        <Link to="" className="author">{username}</Link>
     );
 }
 

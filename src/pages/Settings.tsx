@@ -1,10 +1,11 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { getLocalStorageData, setLocalStorageData, userObj } from '../utils/utils';
 import validator from 'validator';
 import config from '../config/default'
 import ErrorMessage from '../components/ErrorMessage';
 import SubmitButton from '../components/SubmitButton';
 import axios from 'axios';
+import { UserContext } from '../context/userContext';
 
 function Settings() {
     const [url, setUrl] = useState('')
@@ -17,20 +18,17 @@ function Settings() {
     const [emailError, setEmailError] = useState('')
     const [passwordError, setPasswordError] = useState('')
 
-    const user = useRef(new userObj())
+    // const user = useRef(new userObj())
+
+    const { user } = useContext(UserContext)
+
+    console.log(user)
 
     useEffect(() => {
-        let currentUser = getLocalStorageData()
-        if (!currentUser.isAuthenticated) {
-            window.location.href = '/login'
-            return
-        }
-        user.current = currentUser;
-
-        setUrl(user.current.image ? user.current.image : '')
-        setUsername(user.current.username ? user.current.username : '')
-        setBio(user.current.bio ? user.current.bio : '')
-        setEmail(user.current.email ? user.current.email : '')
+        setUrl(user.image ? user.image : '')
+        setUsername(user.username ? user.username : '')
+        setBio(user.bio ? user.bio : '')
+        setEmail(user.email ? user.email : '')
 
     }, [])
 
@@ -56,14 +54,14 @@ function Settings() {
             let res = await axios.put(`${config.apiUrl}/user`, {
                 user: {
                     email,
-                    token: user.current.token,
+                    token: user.token,
                     username,
                     bio,
                     image: url
                 }
             }, {
                 headers: {
-                    authorization: `Bearer ${user.current.token}`
+                    authorization: `Bearer ${user.token}`
                 }
             })
             alert('Updated Settings')

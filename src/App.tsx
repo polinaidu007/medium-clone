@@ -21,37 +21,29 @@ import { getLocalStorageData, userObj } from './utils/utils';
 
 function App() {
   const [user, setUser] = useState(new userObj())  //email,token,username,bio,image
-  useEffect(() => {
-    let user = getLocalStorageData()
-    setUser(user)
-    console.log('app component', user)
-  }, [])
-
 
   return (
-    <div>
-      <Router>
-        <ToastContainer />
-        <UserContext.Provider value={{ user, setUser }}>
-          <Header />
-          <Switch>
-            <Route exact path='/login' component={Login} />
-            <Route exact path='/register' component={Register} />
 
-            <Route exact path='/settings' component={Settings} />
-            <Route exact path='/' component={Home} />
-            <Route exact path='/editor' component={CreateArticle} />
-            <Route exact path='/editor/:slug' component={CreateArticle} />
-            <Route exact path='/article' component={Article} />
-            <Route exact path='/profile' component={Profile} />
-          </Switch>
-          <Footer />
-        </UserContext.Provider>
+    <Router>
+      <ToastContainer />
+      <UserContext.Provider value={{ user, setUser }}>
+        <Header />
+        <Switch>
+          <Route exact path='/login' component={Login} />
+          <Route exact path='/register' component={Register} />
 
-      </Router>
-      {/* <Home /> */}
+          <ProtectedRoute exact path='/settings' component={Settings} />
+          <ProtectedRoute exact path='/' component={Home} />
+          <ProtectedRoute exact path='/editor' component={CreateArticle} />
+          <ProtectedRoute exact path='/editor/:slug' component={CreateArticle} />
+          <ProtectedRoute exact path='/article/:slug' component={Article} />
+          <Route exact path='/profile' component={Profile} />
+        </Switch>
+        <Footer />
+      </UserContext.Provider>
 
-    </div>
+    </Router>
+
   )
 }
 

@@ -1,9 +1,11 @@
 import axios from 'axios';
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import config from '../config/default'
 import validator from 'validator';
 import ErrorMessage from '../components/ErrorMessage';
 import SubmitButton from '../components/SubmitButton';
+import { UserContext } from '../context/userContext';
+import { Redirect } from 'react-router-dom';
 
 function Register() {
     const [username, setUsername] = useState('')
@@ -15,7 +17,10 @@ function Register() {
 
     const [disableButton, setDisableButton] = useState(false)
 
+    const { user, setUser } = useContext(UserContext)
 
+    if (user.isAuthenticated)
+        return <Redirect to="/" />
 
     const usernameValidator = () => {
         if (!username)

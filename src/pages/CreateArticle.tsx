@@ -1,11 +1,10 @@
 import axios, { Method } from 'axios';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useParams } from 'react-router';
+import React, { useContext, useEffect, useState } from 'react';
+import { Redirect, useParams } from 'react-router';
 import ErrorMessage from '../components/ErrorMessage';
 import SubmitButton from '../components/SubmitButton';
 import config from '../config/default'
 import { UserContext } from '../context/userContext';
-import { getLocalStorageData, userObj } from '../utils/utils';
 
 function CreateArticle() {
 
@@ -17,18 +16,13 @@ function CreateArticle() {
     const [descriptionError, setDescriptionError] = useState('')
     const [bodyError, setBodyError] = useState('')
 
-    const user = useRef(new userObj())
+    // const user = useRef(new userObj())
+    const { user } = useContext(UserContext)
 
     const { slug }: any = useParams()
 
     useEffect(() => {
-        user.current = getLocalStorageData()
-        if (!user.current.isAuthenticated) {
-            window.location.href = '/login'
-            return
-        }
-
-        console.log('CreateArticle component')
+        console.log('CreateArticle useEffect')
         const fetchFromAPI = async () => {
             try {
                 let res = await axios.get(`${config.apiUrl}/articles/${slug}`);
@@ -42,7 +36,7 @@ function CreateArticle() {
             } catch (error) {
                 alert(error)
                 console.log(error)
-                window.location.href = '/'
+                return (<Redirect to='/' />)
             }
         }
         if (slug)
@@ -71,7 +65,7 @@ function CreateArticle() {
             }
             let res = await axios({
                 method, url, data, headers: {
-                    authorization: `Bearer ${user.current.token}`
+                    authorization: `Bearer ${user.token}`
                 }
             })
             console.log(res.data)

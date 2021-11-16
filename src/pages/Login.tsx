@@ -5,9 +5,10 @@ import validator from 'validator';
 import ErrorMessage from '../components/ErrorMessage';
 import SubmitButton from '../components/SubmitButton';
 import { UserContext } from '../context/userContext';
-import { getLocalStorageData, setLocalStorageData } from '../utils/utils';
+import { getLocalStorageData, setLocalStorageData, userObj } from '../utils/utils';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { Redirect } from 'react-router';
 
 
 function Login() {
@@ -19,20 +20,10 @@ function Login() {
 
     const [disableButton, setDisableButton] = useState(false)
 
-    // const { setUser } = useContext(UserContext)
+    const { user, setUser } = useContext(UserContext)
 
-
-    // const saveUserDetails = (param: any) => {
-    //     let obj = { ...param, isAuthenticated: true }
-    //     localStorage.setItem('conduit_user', JSON.stringify(obj))
-    //     console.log('saveUserDetails')
-    //     // setUser(obj)
-    // }
-
-    useEffect(() => {
-        if (getLocalStorageData().isAuthenticated)
-            window.location.href = '/'
-    }, [])
+    if (user.isAuthenticated)
+        return <Redirect to="/" />
 
     const emailValidator = () => {
         if (!email)
@@ -59,8 +50,7 @@ function Login() {
                 }
             })
             console.log(res.data)
-            setLocalStorageData(res.data.user)
-            window.location.href = '/'
+            setUser({ isAuthenticated: true, ...res.data.user })
             toast('Login successfull', { type: 'success' })
         } catch (error) {
             setDisableButton(false)
