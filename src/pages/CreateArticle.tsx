@@ -5,6 +5,7 @@ import ErrorMessage from '../components/ErrorMessage';
 import SubmitButton from '../components/SubmitButton';
 import config from '../config/default'
 import { UserContext } from '../context/userContext';
+import ReactMarkdown from "react-markdown";
 
 function CreateArticle() {
 
@@ -102,6 +103,9 @@ function CreateArticle() {
                                     {
                                         bodyError ? (<ErrorMessage text={bodyError} />) : null
                                     }
+                                </fieldset>
+                                <fieldset className='form-group'>
+                                <ReactMarkdown className='form-control markdown-height'>{body}</ReactMarkdown>
                                 </fieldset>
                                 {
                                     !slug ? <fieldset className="form-group">
