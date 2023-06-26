@@ -5,10 +5,10 @@ import { toast } from 'react-toastify';
 import ArticlePreview from '../components/ArticlePreview';
 import config from '../config/default'
 import { UserContext } from '../context/userContext';
-import { article } from '../interfaces/models';
+import { ArticleType } from '../interfaces/models';
 
 interface feedStateObjectType {
-    data: article[],
+    data: ArticleType[],
     loading: boolean
 }
 

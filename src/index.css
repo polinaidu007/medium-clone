@@ -11,3 +11,10 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.markdown-height {
+  /* max-height: 400px;
+  min-height: 200px; */
+  height: 600px;
+  overflow: scroll;
+}

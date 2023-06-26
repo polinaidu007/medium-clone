@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { Link } from 'react-router-dom';
-import { article } from '../interfaces/models';
+import { ArticleType } from '../interfaces/models';
 import ArticleDate from './ArticleDate';
 import AuthorName from './AuthorName';
 import LikeButton from './LikeButton';
 import PreviewImage from './PreviewImage';
 
 
-function ArticlePreview(param: article) {
+function ArticlePreview(param: ArticleType) {
     return (<div className="article-preview">
         <div className="article-meta">
             <PreviewImage {...param} />

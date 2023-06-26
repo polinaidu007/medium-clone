@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { article } from '../interfaces/models';
+import { ArticleType } from '../interfaces/models';
 
-function LikeButton({ favouritesCount }: article) {
+function LikeButton({ favoriteCount }: ArticleType) {
     return (<button className="btn btn-outline-primary btn-sm pull-xs-right">
-        <i className="ion-heart"></i> {favouritesCount}
+        <i className="ion-heart"></i> {favoriteCount}
     </button>);
 }
 
