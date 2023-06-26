@@ -1,23 +1,58 @@
-import React from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { useParams } from "react-router-dom";
+import axios, { Method } from 'axios';
+import config from '../config/default'
+import { ArticleResponseType, PostDetailsType } from '../interfaces/models';
+import { followProfile} from '../services/profiles.service'
+import { UserContext } from '../context/userContext';
+
 function Article() {
+    const {slug} = useParams<any>();
+    const [article, setArticle] = useState<PostDetailsType>();
+    const {user, setUser} = useContext(UserContext)
+
+    useEffect(()=>{
+        console.log(slug);
+        const fetchFromAPI = async () => {
+            try {
+                let res = await axios.get(`${config.apiUrl}/articles/${slug}`);
+                
+                // let { article: { title, description, body } } = res.data
+                let data : ArticleResponseType = res.data;
+                setArticle(data.article);
+            } catch (error) {
+                // alert(error)
+                console.log(error)
+                // return (<Redirect to='/' />)
+            }
+        }
+        fetchFromAPI();
+        //fetch article from 
+    },[])
+
+    const followAuthor = async () => { 
+        let res = article?.author?.username && await followProfile(article?.author.username, user.token);
+        console.log(res);
+    }
+
     return (
         <div className="article-page">
 
             <div className="banner">
                 <div className="container">
 
-                    <h1>How to build webapps that scale</h1>
+                    <h1>{article?.title}</h1>
 
                     <div className="article-meta">
                         <a href=""><img src="http://i.imgur.com/Qr71crq.jpg" /></a>
                         <div className="info">
-                            <a href="" className="author">Eric Simons</a>
-                            <span className="date">January 20th</span>
+                            <a href="" className="author">{article?.author.username}</a>
+                            <span className="date">{article?.created}</span>
                         </div>
-                        <button className="btn btn-sm btn-outline-secondary">
+                        <button className="btn btn-sm btn-outline-secondary" onClick={followAuthor}>
                             <i className="ion-plus-round"></i>
                             &nbsp;
-                            Follow Eric Simons <span className="counter">(10)</span>
+                            Follow {article?.author.username} <span className="counter">(10)</span>
                         </button>
                         &nbsp;&nbsp;
                         <button className="btn btn-sm btn-outline-primary">
@@ -33,13 +68,7 @@ function Article() {
             <div className="container page">
 
                 <div className="row article-content">
-                    <div className="col-md-12">
-                        <p>
-                            Web development technologies have evolved at an incredible clip over the past few years.
-                        </p>
-                        <h2 id="introducing-ionic">Introducing RealWorld.</h2>
-                        <p>It's a great solution for learning how other frameworks work.</p>
-                    </div>
+                    <div className="col-md-12" dangerouslySetInnerHTML={{ __html: article?.body ?? '' }} />
                 </div>
 
                 <hr />
