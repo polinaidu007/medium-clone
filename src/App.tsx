@@ -16,7 +16,7 @@ import Register from './pages/Register';
 import { ToastContainer } from 'react-toastify';
 import ProtectedRoute from './components/ProtectedRoute';
 import { UserContext } from './context/userContext';
-import { getLocalStorageData, userObj } from './utils/utils';
+import {  userObj } from './utils/utils';
 
 
 function App() {
